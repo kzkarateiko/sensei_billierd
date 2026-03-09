@@ -5,25 +5,40 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>SENSEI Kolhoz Calculator</title>
+<title>SENSEI Kolhoz PRO</title>
 
 <style>
 
 body{
 font-family:Arial;
-background:#0b1f16;
+background:#071b13;
 color:white;
 margin:0;
 padding:20px;
 text-align:center;
 }
 
+.logo{
+width:180px;
+margin-bottom:10px;
+}
+
+.club{
+font-size:14px;
+margin-top:20px;
+opacity:0.9;
+}
+
 .card{
 background:#123524;
-padding:20px;
+padding:25px;
 border-radius:12px;
-max-width:700px;
+max-width:750px;
 margin:auto;
+}
+
+h2{
+margin-top:5px;
 }
 
 .row{
@@ -54,28 +69,32 @@ margin-top:10px;
 cursor:pointer;
 }
 
-.calc{
-background:#d4af37;
-color:black;
-}
-
-.copy{
-background:#2e5c77;
-color:white;
-}
-
-.reset{
-background:#7a1f1f;
-color:white;
-}
+.calc{background:#d4af37;color:black}
+.copy{background:#35607c;color:white}
+.reset{background:#7a1f1f;color:white}
 
 .result{
 background:#08140d;
 padding:12px;
 border-radius:8px;
-margin-top:8px;
+margin-top:10px;
 text-align:left;
-font-size:16px;
+}
+
+.green{color:#4cff7c}
+.red{color:#ff6b6b}
+
+.explain{
+font-size:14px;
+opacity:0.9;
+margin-top:6px;
+}
+
+.map{
+margin-top:15px;
+background:#d4af37;
+color:black;
+font-weight:bold;
 }
 
 </style>
@@ -84,6 +103,8 @@ font-size:16px;
 <body>
 
 <div class="card">
+
+<img src="logo.jpg" class="logo">
 
 <h2>SENSEI KOLHOZ CALCULATOR</h2>
 
@@ -101,14 +122,23 @@ font-size:16px;
 <div id="players"></div>
 
 <button class="calc" onclick="calc()">ПОДСЧИТАТЬ</button>
-<button class="copy" onclick="copyResult()">КОПИРОВАТЬ РЕЗУЛЬТАТ</button>
+<button class="copy" onclick="copyResult()">СКОПИРОВАТЬ В WHATSAPP</button>
 <button class="reset" onclick="resetAll()">СБРОС</button>
 
 <div id="results"></div>
 
-<p style="opacity:0.6;margin-top:15px">
-Партия 2 считается как обратная игра
-</p>
+<div class="club">
+
+<b>SENSEI BILLIARD CLUB</b><br><br>
+
+📍 Каражанова улица, 1а<br>
+Алматинская область, Каскелен<br>
+
+</div>
+
+<button class="map" onclick="openMap()">
+ОТКРЫТЬ АДРЕС В КАРТЕ
+</button>
 
 </div>
 
@@ -144,22 +174,22 @@ for(let i=0;i<4;i++){
 
 let name=document.getElementById("name"+i).value
 
+if(name!=""){
+
 let p1=parseInt(document.getElementById("p1_"+i).value)||0
 let p2=parseInt(document.getElementById("p2_"+i).value)||0
 
-if(name!=""){
-
 players.push({
-
 name:name,
 score:p1+p2,
 money:0
-
 })
 
 }
 
 }
+
+let explain=[]
 
 for(let i=0;i<players.length;i++){
 
@@ -173,6 +203,11 @@ if(diff>0){
 players[i].money+=money
 players[j].money-=money
 
+explain.push(
+players[j].name+" проиграл "+players[i].name+
+" "+money+"₸ ("+Math.abs(diff)+" шаров)"
+)
+
 }
 
 if(diff<0){
@@ -180,19 +215,46 @@ if(diff<0){
 players[i].money-=money
 players[j].money+=money
 
-}
+explain.push(
+players[i].name+" проиграл "+players[j].name+
+" "+money+"₸ ("+Math.abs(diff)+" шаров)"
+)
 
 }
 
 }
 
-let html=""
+}
+
+let html="<div class='result'><b>ИТОГ ИГРЫ</b><br><br>"
 
 players.forEach(p=>{
 
-html+=`<div class="result">${p.name} : ${p.money>0?"+":""}${p.money}</div>`
+if(p.money>0){
+
+html+=`<div class="green">${p.name} +${p.money}₸</div>`
+
+}else if(p.money<0){
+
+html+=`<div class="red">${p.name} ${p.money}₸</div>`
+
+}else{
+
+html+=`${p.name} 0₸`
+
+}
 
 })
+
+html+="<br><b>КТО КОМУ ДОЛЖЕН</b><br>"
+
+explain.forEach(e=>{
+
+html+=`<div class="explain">${e}</div>`
+
+})
+
+html+="</div>"
 
 document.getElementById("results").innerHTML=html
 
@@ -204,7 +266,7 @@ let text=document.getElementById("results").innerText
 
 navigator.clipboard.writeText(text)
 
-alert("Результат скопирован")
+alert("Результат скопирован. Вставь в WhatsApp.")
 
 }
 
@@ -214,7 +276,14 @@ location.reload()
 
 }
 
+function openMap(){
+
+window.open("https://maps.google.com/?q=Каражанова+1а+Каскелен")
+
+}
+
 </script>
 
 </body>
+
 </html>

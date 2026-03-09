@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>SENSEI Kolhoz Calculator</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#0b1f16;
+color:white;
+margin:0;
+padding:20px;
+text-align:center;
+}
+
+.card{
+background:#123524;
+padding:20px;
+border-radius:12px;
+max-width:700px;
+margin:auto;
+}
+
+.row{
+display:flex;
+gap:10px;
+margin-bottom:10px;
+}
+
+.name{flex:2}
+.score{flex:1}
+
+input{
+width:100%;
+padding:12px;
+border-radius:8px;
+border:none;
+font-size:16px;
+}
+
+button{
+width:100%;
+padding:15px;
+border:none;
+border-radius:10px;
+font-size:18px;
+font-weight:bold;
+margin-top:10px;
+cursor:pointer;
+}
+
+.calc{
+background:#d4af37;
+color:black;
+}
+
+.copy{
+background:#2e5c77;
+color:white;
+}
+
+.reset{
+background:#7a1f1f;
+color:white;
+}
+
+.result{
+background:#08140d;
+padding:12px;
+border-radius:8px;
+margin-top:8px;
+text-align:left;
+font-size:16px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+<h2>SENSEI KOLHOZ CALCULATOR</h2>
+
+<div class="row">
+<div style="flex:2">Ставка за шар</div>
+<input id="stake" type="number" value="1000">
+</div>
+
+<div class="row">
+<div class="name">Игрок</div>
+<div class="score">П1</div>
+<div class="score">П2</div>
+</div>
+
+<div id="players"></div>
+
+<button class="calc" onclick="calc()">ПОДСЧИТАТЬ</button>
+<button class="copy" onclick="copyResult()">КОПИРОВАТЬ РЕЗУЛЬТАТ</button>
+<button class="reset" onclick="resetAll()">СБРОС</button>
+
+<div id="results"></div>
+
+<p style="opacity:0.6;margin-top:15px">
+Партия 2 считается как обратная игра
+</p>
+
+</div>
+
+<script>
+
+let container=document.getElementById("players")
+
+for(let i=0;i<4;i++){
+
+container.innerHTML+=`
+
+<div class="row">
+
+<input class="name" id="name${i}" placeholder="Игрок">
+
+<input class="score" id="p1_${i}" type="number">
+
+<input class="score" id="p2_${i}" type="number">
+
+</div>
+
+`
+
+}
+
+function calc(){
+
+let stake=parseInt(document.getElementById("stake").value)||0
+
+let players=[]
+
+for(let i=0;i<4;i++){
+
+let name=document.getElementById("name"+i).value
+
+let p1=parseInt(document.getElementById("p1_"+i).value)||0
+let p2=parseInt(document.getElementById("p2_"+i).value)||0
+
+if(name!=""){
+
+players.push({
+
+name:name,
+score:p1+p2,
+money:0
+
+})
+
+}
+
+}
+
+for(let i=0;i<players.length;i++){
+
+for(let j=i+1;j<players.length;j++){
+
+let diff=players[i].score-players[j].score
+let money=Math.abs(diff)*stake
+
+if(diff>0){
+
+players[i].money+=money
+players[j].money-=money
+
+}
+
+if(diff<0){
+
+players[i].money-=money
+players[j].money+=money
+
+}
+
+}
+
+}
+
+let html=""
+
+players.forEach(p=>{
+
+html+=`<div class="result">${p.name} : ${p.money>0?"+":""}${p.money}</div>`
+
+})
+
+document.getElementById("results").innerHTML=html
+
+}
+
+function copyResult(){
+
+let text=document.getElementById("results").innerText
+
+navigator.clipboard.writeText(text)
+
+alert("Результат скопирован")
+
+}
+
+function resetAll(){
+
+location.reload()
+
+}
+
+</script>
+
+</body>
+</html>
